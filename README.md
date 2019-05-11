@@ -1,3 +1,3 @@
-# Character recognition - ART1
+# Characters recognition - ART1
 
 
