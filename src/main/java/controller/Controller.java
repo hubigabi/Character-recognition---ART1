@@ -148,7 +148,7 @@ public class Controller {
             } else if (art1.getMembership().keySet().contains(textField.getText())) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Input not valid");
-                errorAlert.setContentText("Juz jest ten znak!");
+                errorAlert.setContentText("This name already exists!");
                 errorAlert.showAndWait();
             } else {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
