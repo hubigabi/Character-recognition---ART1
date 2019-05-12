@@ -9,7 +9,7 @@ public class Main extends Application {
 
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(this.getClass().getResource("/view/view.fxml"));
-        primaryStage.setTitle("ART1");
+        primaryStage.setTitle("Characters recognition - ART1");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
