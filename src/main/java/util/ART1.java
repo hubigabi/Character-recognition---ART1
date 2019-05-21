@@ -1,4 +1,5 @@
 package util;
+
 ;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.Map;
 public class ART1 {
 
     private final int N = 63;    //Number of components in an input vector.
-    private final int M = 25;    //Max number of clusters to be formed.
+    private final int M = 30;    //Max number of clusters to be formed.
 
     private double VIGILANCE = 0.8;
 
@@ -49,16 +50,16 @@ public class ART1 {
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 bw[i][j] = 1.0 / (1.0 + N);
-            } // j
-        } // i
+            }
+        }
 
         // Initialize top-down weight matrix.
         tw = new double[M][N];
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 tw[i][j] = 1.0;
-            } // j
-        } // i
+            }
+        }
 
         f1a = new int[N];
         f1b = new int[N];
@@ -94,8 +95,8 @@ public class ART1 {
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 f2[i] += bw[i][j] * (double) f1a[j];
-            } // j
-        } // i
+            }
+        }
 
         reset = true;
         while (reset == true) {
@@ -177,39 +178,8 @@ public class ART1 {
         return winner;
     }
 
-    public void printResults() {
-        int k = 0;
-
-        System.out.println("Input vectors assigned to each cluster:\n");
-        for (int i = 0; i < M; i++) {
-            System.out.print("Cluster # " + i + ": ");
-            for (int j = 0; j < membership.size(); j++) {
-                if (membership.get(j) == i) {
-                    System.out.print(j + ", ");
-                }
-            } // j
-            System.out.print("\n");
-        } // i
-
-        System.out.println("Final weight values for each cluster:\n");
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                if (tw[i][j] >= 0.5) {
-                    System.out.print("#");
-                } else {
-                    System.out.print(".");
-                }
-
-                k += 1;
-                if (k == FONT_WIDTH) {
-                    System.out.print("\n");
-                    k = 0;
-                }
-            } // j
-            System.out.print("\n");
-        } // i
-
-        System.out.print("\n");
+    public double[] getTw(Integer number) {
+        return tw[number];
     }
 
     public Integer test(Integer[] data) {
@@ -241,8 +211,8 @@ public class ART1 {
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 f2[i] += bw[i][j] * (double) f1a[j];
-            } // j
-        } // i
+            }
+        }
 
         reset = true;
         while (reset == true) {
@@ -266,9 +236,10 @@ public class ART1 {
 
     public String getClustersString() {
         String returnString = "";
-        Integer maxValue = membership.values().stream().max(Comparator.comparingInt(o -> o)).get();
+        Integer maxValue = membership.values().stream()
+                .max(Comparator.comparingInt(o -> o)).get();
 
-        for (int i = 0; i < maxValue+1; i++) {
+        for (int i = 0; i < maxValue + 1; i++) {
             returnString += "Cluster " + i + " : ";
 
             for (Map.Entry<String, Integer> entry : membership.entrySet()) {

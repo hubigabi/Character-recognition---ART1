@@ -16,6 +16,7 @@ import util.ART1;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 public class Controller {
@@ -24,6 +25,7 @@ public class Controller {
     public Slider slider;
     public TextField textField;
     public Label value_lb;
+    public TextField clusterNumber_tf;
     @FXML
     private GridPane gridPane;
     private ObservableList<Rectangle> rectangleObservableList;
@@ -32,6 +34,7 @@ public class Controller {
     public void initialize() {
         art1 = new ART1();
         textField.setPromptText("Name: ");
+        clusterNumber_tf.setPromptText("Number: ");
         rectangleObservableList = FXCollections.observableArrayList();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
@@ -250,5 +253,28 @@ public class Controller {
     public boolean isBoardFilled() {
         return rectangleObservableList.stream()
                 .anyMatch(rectangle -> rectangle.getFill() != Color.WHITE);
+    }
+
+    public void loadCluster_bt_onAction(ActionEvent actionEvent) {
+
+        try {
+            int clusterNumber = Integer.parseInt(clusterNumber_tf.getText());
+            double[] value = art1.getTw(clusterNumber);
+            int number = 0;
+
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (value[number] == 0.0)
+                        rectangleObservableList.get(j * 9 + i).setFill(Color.WHITE);
+                    else
+                        rectangleObservableList.get(j * 9 + i).setFill(Color.BLACK);
+                    number++;
+                }
+            }
+        } catch (Exception e) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Wrong number of cluster!");
+            errorAlert.showAndWait();
+        }
     }
 }
