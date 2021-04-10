@@ -41,7 +41,7 @@ public class Controller {
     private ART1 art1;
 
     private final int MAX_SELECTED_FILES_NUMBER = 30;
-    private final String DATA_DIRECTORY_NAME = "/data";
+    private final String DATA_DIRECTORY_NAME = "data";
     private String dataPath;
 
     public void initialize() {
@@ -78,7 +78,7 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        dataPath = Paths.get(".").toAbsolutePath().normalize().toString() + DATA_DIRECTORY_NAME;
+        dataPath = Paths.get(".").toAbsolutePath().normalize().toString() + "/" + DATA_DIRECTORY_NAME + "/";
     }
 
     public void saveButtonOnAction(ActionEvent actionEvent) {
