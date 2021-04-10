@@ -234,20 +234,20 @@ public class ART1 {
     }
 
     public String getClustersString() {
-        StringBuilder returnString = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int maxValue = membership.values().stream()
                 .max(Comparator.comparingInt(o -> o)).get();
 
         for (int i = 0; i < maxValue + 1; i++) {
-            returnString.append("Cluster ").append(i).append(" : ");
+            sb.append("Cluster ").append(i).append(" : ");
 
             for (Map.Entry<String, Integer> entry : membership.entrySet()) {
                 if (entry.getValue() == i) {
-                    returnString.append(entry.getKey()).append(", ");
+                    sb.append(entry.getKey()).append(", ");
                 }
             }
-            returnString.append("\n");
+            sb.append("\n");
         }
-        return returnString.toString();
+        return sb.toString();
     }
 }

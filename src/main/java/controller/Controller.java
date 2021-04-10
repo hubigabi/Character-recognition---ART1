@@ -39,6 +39,10 @@ public class Controller {
     private ObservableList<Rectangle> rectangleObservableList;
     private ART1 art1;
 
+    private final int MAX_SELECTED_FILES_NUMBER = 30;
+    private final String DATA_DIRECTORY_NAME = "/data";
+    private String dataPath;
+
     public void initialize() {
         art1 = new ART1();
         textField.setPromptText("Name: ");
@@ -67,6 +71,8 @@ public class Controller {
             art1.setVIGILANCE(number);
             valueLabel.setText("Value: " + number);
         });
+
+        dataPath = Paths.get(".").toAbsolutePath().normalize().toString() + DATA_DIRECTORY_NAME;
     }
 
     public void saveButtonOnAction(ActionEvent actionEvent) {
@@ -83,8 +89,7 @@ public class Controller {
             output.append("\n");
         }
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(Paths.get(".").
-                toAbsolutePath().normalize().toString() + "\\src\\main\\resources\\data"));
+        fileChooser.setInitialDirectory(new File(dataPath));
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
         File file = fileChooser.showSaveDialog(null);
@@ -104,7 +109,7 @@ public class Controller {
 
     public void openButtonOnAction(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(Paths.get(".").toAbsolutePath().normalize().toString() + "\\src\\main\\resources\\data"));
+        fileChooser.setInitialDirectory(new File(dataPath));
         fileChooser.setTitle("Select .txt file with data");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("TXT Files", "*.txt"));
@@ -152,63 +157,70 @@ public class Controller {
                 textArea.clear();
                 textArea.setText(art1.getClustersString());
             } else if (art1.getMembership().keySet().contains(textField.getText())) {
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Input not valid");
-                errorAlert.setContentText("This name already exists!");
-                errorAlert.showAndWait();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Input not valid!");
+                alert.setContentText("This name already exists");
+                alert.showAndWait();
             } else {
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Input not valid");
-                errorAlert.setContentText("Write name for character!");
-                errorAlert.showAndWait();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Input not valid!");
+                alert.setContentText("Write name for character");
+                alert.showAndWait();
             }
         } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Board is empty!");
-            errorAlert.setContentText("Fill the board!");
-            errorAlert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Board is empty!");
+            alert.setContentText("Fill the board");
+            alert.showAndWait();
         }
     }
 
     public void trainAll_bt_onAction(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(Paths.get(".")
-                .toAbsolutePath().normalize().toString() + "\\src\\main\\resources\\data"));
+        fileChooser.setInitialDirectory(new File(dataPath));
         fileChooser.setTitle("Select .txt files with data");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("TXT Files", "*.txt"));
         List<File> fileList = fileChooser.showOpenMultipleDialog(null);
-        Integer[] letter = new Integer[63];
 
         if (fileList != null) {
-            for (File file : fileList) {
-                try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
-                    StringBuilder sb = new StringBuilder();
-                    String line = br.readLine();
+            if (fileList.size() < MAX_SELECTED_FILES_NUMBER) {
 
-                    while (line != null) {
-                        sb.append(line);
-                        line = br.readLine();
-                    }
-                    String everything = sb.toString();
+                for (File file : fileList) {
+                    try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+                        StringBuilder sb = new StringBuilder();
+                        String line = br.readLine();
 
-                    for (int i = 0; i < 63; i++) {
-                        if (everything.charAt(i) == '0')
-                            letter[i] = 0;
-                        else
-                            letter[i] = 1;
-                    }
+                        while (line != null) {
+                            sb.append(line);
+                            line = br.readLine();
+                        }
+                        String everything = sb.toString();
 
-                    String fileName = file.getName();
-                    if (fileName.length() > 4 && fileName.endsWith(".txt")) {
-                        fileName = fileName.substring(0, fileName.length() - 4);
+                        Integer[] letter = new Integer[63];
+                        for (int i = 0; i < 63; i++) {
+                            if (everything.charAt(i) == '0')
+                                letter[i] = 0;
+                            else
+                                letter[i] = 1;
+                        }
+
+                        String fileName = file.getName();
+                        if (fileName.length() > 4 && fileName.endsWith(".txt")) {
+                            fileName = fileName.substring(0, fileName.length() - 4);
+                        }
+                        art1.train(letter, fileName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    art1.train(letter, fileName);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                textArea.setText(art1.getClustersString());
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Too many files selected!");
+                alert.setContentText("You can only choose " + MAX_SELECTED_FILES_NUMBER + " files at the same time");
+                alert.showAndWait();
             }
-            textArea.setText(art1.getClustersString());
         } else {
             System.out.println("File selection cancelled");
         }
@@ -220,10 +232,10 @@ public class Controller {
             Integer clusterNumber = art1.test(getDataFromMatrix());
             textArea.appendText("\n" + "Cluster for character: " + clusterNumber);
         } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Board is empty!");
-            errorAlert.setContentText("Fill the board!");
-            errorAlert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Board is empty!");
+            alert.setContentText("Fill the board");
+            alert.showAndWait();
         }
     }
 
@@ -273,9 +285,9 @@ public class Controller {
                 }
             }
         } catch (Exception e) {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Wrong number of cluster!");
-            errorAlert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Wrong number of cluster!");
+            alert.showAndWait();
         }
     }
 }
