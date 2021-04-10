@@ -1,4 +1,4 @@
-package util;
+package algorithm;
 
 import java.util.Comparator;
 import java.util.HashMap;

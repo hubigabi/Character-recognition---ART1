@@ -10,9 +10,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
-import util.ART1;
+import algorithm.ART1;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -72,6 +73,11 @@ public class Controller {
             valueLabel.setText("Value: " + number);
         });
 
+        try {
+            Files.createDirectories(Paths.get(DATA_DIRECTORY_NAME));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         dataPath = Paths.get(".").toAbsolutePath().normalize().toString() + DATA_DIRECTORY_NAME;
     }
 
