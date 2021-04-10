@@ -1,7 +1,5 @@
 package controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,25 +14,35 @@ import util.ART1;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 public class Controller {
 
+    @FXML
     public TextArea textArea;
+
+    @FXML
     public Slider slider;
+
+    @FXML
     public TextField textField;
-    public Label value_lb;
-    public TextField clusterNumber_tf;
+
+    @FXML
+    public Label valueLabel;
+
+    @FXML
+    public TextField clusterNumberTextField;
+
     @FXML
     private GridPane gridPane;
+
     private ObservableList<Rectangle> rectangleObservableList;
     private ART1 art1;
 
     public void initialize() {
         art1 = new ART1();
         textField.setPromptText("Name: ");
-        clusterNumber_tf.setPromptText("Number: ");
+        clusterNumberTextField.setPromptText("Number: ");
         rectangleObservableList = FXCollections.observableArrayList();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
@@ -53,29 +61,26 @@ public class Controller {
             }
         }
 
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
-                                Number old_val, Number new_val) {
-                double number = Math.round(new_val.doubleValue() * 100);
-                number = number / 100;
-                art1.setVIGILANCE(number);
-                value_lb.setText("Value: " + number);
-            }
+        slider.valueProperty().addListener((ov, old_val, new_val) -> {
+            double number = Math.round(new_val.doubleValue() * 100);
+            number = number / 100;
+            art1.setVIGILANCE(number);
+            valueLabel.setText("Value: " + number);
         });
     }
 
     public void saveButtonOnAction(ActionEvent actionEvent) {
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 7; j++) {
 
                 if (rectangleObservableList.get(j * 9 + i).getFill() == Color.WHITE)
-                    output += "0";
+                    output.append("0");
                 else
-                    output += "1";
+                    output.append("1");
             }
-            output += "\n";
+            output.append("\n");
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(Paths.get(".").
@@ -126,13 +131,11 @@ public class Controller {
                         number++;
                     }
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("File selection cancelled.");
+            System.out.println("File selection cancelled");
         }
     }
 
@@ -156,7 +159,7 @@ public class Controller {
             } else {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Input not valid");
-                errorAlert.setContentText("Wrtie name for character!");
+                errorAlert.setContentText("Write name for character!");
                 errorAlert.showAndWait();
             }
         } else {
@@ -175,7 +178,7 @@ public class Controller {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("TXT Files", "*.txt"));
         List<File> fileList = fileChooser.showOpenMultipleDialog(null);
-        Integer letter[] = new Integer[63];
+        Integer[] letter = new Integer[63];
 
         if (fileList != null) {
             for (File file : fileList) {
@@ -197,19 +200,17 @@ public class Controller {
                     }
 
                     String fileName = file.getName();
-                    if (fileName != null && fileName.length() > 4 && fileName.endsWith(".txt")) {
+                    if (fileName.length() > 4 && fileName.endsWith(".txt")) {
                         fileName = fileName.substring(0, fileName.length() - 4);
                     }
                     art1.train(letter, fileName);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             textArea.setText(art1.getClustersString());
         } else {
-            System.out.println("File selection cancelled.");
+            System.out.println("File selection cancelled");
         }
     }
 
@@ -227,7 +228,7 @@ public class Controller {
     }
 
     public Integer[] getDataFromMatrix() {
-        Integer letter[] = new Integer[63];
+        Integer[] letter = new Integer[63];
         int counter = 0;
 
         for (int i = 0; i < 9; i++) {
@@ -258,7 +259,7 @@ public class Controller {
     public void loadCluster_bt_onAction(ActionEvent actionEvent) {
 
         try {
-            int clusterNumber = Integer.parseInt(clusterNumber_tf.getText());
+            int clusterNumber = Integer.parseInt(clusterNumberTextField.getText());
             double[] value = art1.getTw(clusterNumber);
             int number = 0;
 

@@ -1,6 +1,5 @@
 package util;
 
-;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +13,14 @@ public class ART1 {
 
     private final int FONT_WIDTH = 7;
 
-    private double bw[][] = null;    //Bottom-up weights.
-    private double tw[][] = null;    //Top-down weights.
+    private double[][] bw = null;    //Bottom-up weights.
+    private double[][] tw = null;    //Top-down weights.
 
-    private int f1a[] = null;        //Input layer.
-    private int f1b[] = null;        //Interface layer.
-    private double f2[] = null;
+    private int[] f1a = null;        //Input layer.
+    private int[] f1b = null;        //Interface layer.
+    private double[] f2 = null;
 
-    private Map<String, Integer> membership = new HashMap();
+    private Map<String, Integer> membership = new HashMap<>();
 
     public ART1() {
         initialize();
@@ -235,20 +234,20 @@ public class ART1 {
     }
 
     public String getClustersString() {
-        String returnString = "";
-        Integer maxValue = membership.values().stream()
+        StringBuilder returnString = new StringBuilder();
+        int maxValue = membership.values().stream()
                 .max(Comparator.comparingInt(o -> o)).get();
 
         for (int i = 0; i < maxValue + 1; i++) {
-            returnString += "Cluster " + i + " : ";
+            returnString.append("Cluster ").append(i).append(" : ");
 
             for (Map.Entry<String, Integer> entry : membership.entrySet()) {
                 if (entry.getValue() == i) {
-                    returnString += entry.getKey() + ", ";
+                    returnString.append(entry.getKey()).append(", ");
                 }
             }
-            returnString += "\n";
+            returnString.append("\n");
         }
-        return returnString;
+        return returnString.toString();
     }
 }
